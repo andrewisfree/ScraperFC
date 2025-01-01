@@ -1,4 +1,6 @@
-comps = {
+from Typing import Dict, Any
+
+comps: Dict[str, Any] = {
     "Argentina Copa de la Liga Profesional": {
         "modules": {
             "sofascore": 13475,
