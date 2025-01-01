@@ -27,7 +27,7 @@ class TestCapology:
         'year, league, expected',
         [('2021-22', 9, pytest.raises(TypeError)), 
          ('2022-23', 'English Premier League', pytest.raises(InvalidLeagueException)),
-         ('2022-23', 'La Liga', does_not_raise())]
+         ('2022-23', 'Spain La Liga', does_not_raise())]
     )
     def test_invalid_league(self, year, league, expected):
         with expected:

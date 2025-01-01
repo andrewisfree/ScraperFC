@@ -1,6 +1,7 @@
-import pandas as pd
 from .scraperfc_exceptions import InvalidLeagueException, InvalidYearException
+from .comps_mapping import comps
 from .utils import botasaurus_get
+import pandas as pd
 import numpy as np
 from typing import Union, Sequence
 import warnings
@@ -19,24 +20,6 @@ import warnings
 """
 
 API_PREFIX = 'https://api.sofascore.com/api/v1'
-
-comps = {
-    # European continental club comps
-    'Champions League': 7, 'Europa League': 679, 'Europa Conference League': 17015,
-    # European domestic leagues
-    'EPL': 17, 'La Liga': 8, 'Bundesliga': 35, 'Serie A': 23, 'Ligue 1': 34,
-    # South America
-    'Argentina Liga Profesional': 155, 'Argentina Copa de la Liga Profesional': 13475,
-    'Liga 1 Peru': 406, "Copa Libertadores": 384,
-    # USA
-    'MLS': 242, 'USL Championship': 13363, 'USL1': 13362, 'USL2': 13546,
-    # Middle East
-    "Saudi Pro League": 955,
-    # Men's international comps
-    'World Cup': 16, 'Euros': 1, 'Gold Cup': 140,
-    # Women's international comps
-    "Women's World Cup": 290
-}
 
 
 class Sofascore:
@@ -85,7 +68,6 @@ class Sofascore:
         Parameters
         ----------
         league : str
-            League to get valid seasons for. See comps ScraperFC.Sofascore for valid leagues.
         
         Returns
         -------
@@ -94,10 +76,12 @@ class Sofascore:
         """
         if not isinstance(league, str):
             raise TypeError('`league` must be a string.')
-        if league not in comps.keys():
-            raise InvalidLeagueException(league, 'Sofascore', list(comps.keys()))
+        if league not in comps.keys() or "sofascore" not in comps[league]["modules"]:
+            raise InvalidLeagueException(league, 'Sofascore')
             
-        response = botasaurus_get(f'{API_PREFIX}/unique-tournament/{comps[league]}/seasons/')
+        response = botasaurus_get(
+            f'{API_PREFIX}/unique-tournament/{comps[league]["modules"]["sofascore"]}/seasons/'
+        )
         seasons = dict([(x['year'], x['id']) for x in response.json()['seasons']])
         return seasons
 
@@ -110,7 +94,6 @@ class Sofascore:
         year : str
             See the :ref:`sofascore_year` `year` parameter docs for details.
         league : str
-            League to get valid seasons for. See comps ScraperFC.Sofascore for valid leagues.
         
         Returns
         -------
@@ -127,8 +110,8 @@ class Sofascore:
         i = 0
         while 1:
             response = botasaurus_get(
-                f'{API_PREFIX}/unique-tournament/{comps[league]}/season/{valid_seasons[year]}/' +
-                f'events/last/{i}'
+                f'{API_PREFIX}/unique-tournament/{comps[league]["modules"]["sofascore"]}/' + \
+                f'season/{valid_seasons[year]}/events/last/{i}'
             )
             if response.status_code != 200:
                 break
@@ -284,7 +267,6 @@ class Sofascore:
         year : str
             See the :ref:`sofascore_year` `year` parameter docs for details.
         league : str
-            League to get valid seasons for. See comps ScraperFC.Sofascore for valid leagues.
         accumulation : str, optional
             Value of the filter accumulation. Can be "per90", "perMatch", or "total". Defaults to
             "total".
@@ -309,7 +291,7 @@ class Sofascore:
         
         positions = self.get_positions(selected_positions)
         season_id = valid_seasons[year]
-        league_id = comps[league]
+        league_id = comps[league]["modules"]["sofascore"]
         
         # Get all player stats from Sofascore API
         offset = 0

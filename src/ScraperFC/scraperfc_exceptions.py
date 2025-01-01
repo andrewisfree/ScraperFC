@@ -1,4 +1,5 @@
 from typing import Union, Sequence
+from .comps_mapping import comps
 
 class InvalidYearException(Exception):
     """ Raised when an invalid year is found
@@ -9,7 +10,7 @@ class InvalidYearException(Exception):
         self.valid_years = valid_years
 
     def __str__(self) -> str:
-        return f'{self.year} is not a valid year for {self.league}. Valid years are' +\
+        return f'`{self.year}` is not a valid year for `{self.league}`. Valid years are' +\
             f' {self.valid_years}.\n\nSee ' +\
             'https://scraperfc.readthedocs.io/en/latest/year_parameter.html for specifics.\n'
 
@@ -17,14 +18,14 @@ class InvalidYearException(Exception):
 class InvalidLeagueException(Exception):
     """ Raised when a league is not valid for a given scraping module.
     """
-    def __init__(self, league: str, module: str, valid_leagues: Sequence) -> None:
+    def __init__(self, league: str, module: str) -> None:
         self.league = league
         self.module = module
-        self.valid_leagues = valid_leagues
+        self.valid_leagues = [k for k in comps if module.lower() in comps[k]["modules"]]
 
     def __str__(self) -> str:
-        return f'{self.league} is not a valid league for {self.module}. Valid leagues are ' + \
-            f'{self.valid_leagues}'
+        return f"`{self.league}` is not a valid league for {self.module}. Valid leagues are " + \
+            f"{self.valid_leagues}."
 
 
 class NoMatchLinksException(Exception):
@@ -37,7 +38,8 @@ class NoMatchLinksException(Exception):
         self.year = year
 
     def __str__(self) -> str:
-        return f'No match score elements found for {self.year} {self.league} at {self.fixtures_url}'
+        return f"No match score elements found for `{self.year}` `{self.league}` at " + \
+            f"{self.fixtures_url}"
 
 
 class ClubEloInvalidTeamException(Exception):
@@ -48,8 +50,8 @@ class ClubEloInvalidTeamException(Exception):
         self.team = team
 
     def __str__(self) -> str:
-        return f'{self.team} is an invalid team for ClubElo. Please check clubelo.com for valid' + \
-            ' team names.'
+        return f'`{self.team}` is an invalid team for ClubElo. Please check clubelo.com for ' + \
+            'valid team names.'
 
 
 class InvalidCurrencyException(Exception):
@@ -60,7 +62,8 @@ class InvalidCurrencyException(Exception):
 
     def __str__(self) -> str:
         return 'Currency must be one of "eur", "gbp", or "usd".'
-    
+
+
 class FBrefRateLimitException(Exception):
     """ Raised when FBref returns HTTP status 429, rate limit request
     """

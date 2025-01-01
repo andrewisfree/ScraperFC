@@ -1,3 +1,6 @@
+from .scraperfc_exceptions import InvalidCurrencyException, InvalidLeagueException, \
+    InvalidYearException
+from .comps_mapping import comps
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -7,28 +10,8 @@ from selenium.common.exceptions import StaleElementReferenceException
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from ScraperFC.scraperfc_exceptions import InvalidCurrencyException, InvalidLeagueException, \
-    InvalidYearException
 from io import StringIO
 from typing import Sequence
-
-comps = {
-    "Bundesliga":  {'url': 'de/1-bundesliga'},
-    "2.Bundesliga":  {'url': 'de/2-bundesliga'},
-    "EPL":  {'url': 'uk/premier-league'},
-    "EFL Championship":  {'url': 'uk/championship'},
-    "Serie A":  {'url': 'it/serie-a'},
-    "Serie B":  {'url': 'it/serie-b'},
-    "La Liga":  {'url': 'es/la-liga'},
-    "La Liga 2":  {'url': 'es/la-liga-2'},
-    "Ligue 1":  {'url': 'fr/ligue-1'},
-    "Ligue 2":  {'url': 'fr/ligue-2'},
-    "Eredivisie":  {'url': 'ne/eredivisie'},
-    "Primeira Liga":  {'url': 'pt/primeira-liga'},
-    "Scottish PL":  {'url': 'uk/scottish-premiership'},
-    "Super Lig":  {'url': 'tr/super-lig'},
-    "Belgian 1st Division":  {'url': 'be/first-division-a'},
-}
 
 
 class Capology():
@@ -62,8 +45,7 @@ class Capology():
         Parameters
         ----------
         league : str
-            League to be scraped (e.g., "EPL"). See the comps variable in ScraperFC.Capology for
-            valid leagues for this module.
+            League to be scraped.
         Returns
         -------
         : str
@@ -71,10 +53,10 @@ class Capology():
         """
         if not isinstance(league, str):
             raise TypeError('`league` must be a string.')
-        if league not in comps.keys():
-            raise InvalidLeagueException(league, 'Capology', list(comps.keys()))
+        if league not in comps.keys() or "capology" not in comps[league]["modules"]:
+            raise InvalidLeagueException(league, 'Capology')
 
-        return f'https://www.capology.com/{comps[league]["url"]}/salaries/'
+        return f'https://www.capology.com/{comps[league]["modules"]["capology"]}/salaries/'
 
     # ==============================================================================================
     def get_valid_seasons(self, league: str) -> Sequence[str]:
@@ -83,8 +65,7 @@ class Capology():
         Parameters
         ----------
         league : str
-            League to be scraped (e.g., "EPL"). See the comps variable in ScraperFC.Capology for
-            valid leagues for this module.
+            League to be scraped.
         Returns
         -------
         : list of str
@@ -92,8 +73,8 @@ class Capology():
         """
         if not isinstance(league, str):
             raise TypeError('`league` must be a string.')
-        if league not in comps.keys():
-            raise InvalidLeagueException(league, 'Capology', list(comps.keys()))
+        if league not in comps.keys() or "capology" not in comps[league]["modules"]:
+            raise InvalidLeagueException(league, 'Capology')
 
         soup = BeautifulSoup(requests.get(self.get_league_url(league)).content, 'html.parser')
         year_dropdown_tags = soup.find('select', {'id': 'nav-submenu2'})\
@@ -111,8 +92,7 @@ class Capology():
         year : str
             See the :ref:`capology_year` `year` parameter docs for details.
         league : str
-            League to be scraped (e.g., "EPL"). See the comps variable in ScraperFC.Capology for
-            valid leagues for this module.
+            League to be scraped.
         Returns
         -------
         : str
@@ -140,8 +120,7 @@ class Capology():
         year : str
             See the :ref:`capology_year` `year` parameter docs for details.
         league : str
-            League to be scraped (e.g., "EPL"). See the comps variable in ScraperFC.Capology for
-            valid leagues for this module.
+            League to be scraped.
         currency : str
             The currency for the returned salaries. Options are "eur" for Euro, "gbp" for British
             Pound, and "USD" for US Dollar

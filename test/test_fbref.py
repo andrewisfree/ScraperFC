@@ -59,7 +59,7 @@ class TestFBref:
     @pytest.mark.parametrize(
         'year, league, expected',
         [('2018', (1, 2, 3), pytest.raises(TypeError)),
-         ('2018', 'fake comp', pytest.raises(InvalidLeagueException))]
+         ('2018', 'fake comp', pytest.raises(InvalidLeagueException)),]
     )
     def test_invalid_league(self, year, league, expected):
         fbref = FBref()

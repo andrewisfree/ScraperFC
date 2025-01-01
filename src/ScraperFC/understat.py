@@ -1,4 +1,5 @@
 from .scraperfc_exceptions import InvalidLeagueException, InvalidYearException
+from .comps_mapping import comps
 import json
 import pandas as pd
 from tqdm import tqdm
@@ -6,16 +7,6 @@ import requests
 from bs4 import BeautifulSoup
 import warnings
 from typing import Sequence, Union
-
-comps = {
-    'EPL': 'https://understat.com/league/EPL',
-    'La Liga': 'https://understat.com/league/La_liga',
-    'Bundesliga': 'https://understat.com/league/Bundesliga',
-    'Serie A': 'https://understat.com/league/Serie_A',
-    'Ligue 1': 'https://understat.com/league/Ligue_1',
-    'RFPL': 'https://understat.com/league/RFPL'
-}
-
 
 def _json_from_script(text: str) -> dict:
     data_str = text.split('JSON.parse(\'')[1].split('\')')[0].encode('utf-8').decode('unicode_escape')
@@ -34,7 +25,6 @@ class Understat:
         year : str
             See the :ref:`understat_year` `year` parameter docs for details.
         league : str
-            League. Look in ScraperFC.Understat comps variable for available leagues.
         
         Returns
         -------
@@ -45,13 +35,13 @@ class Understat:
             raise TypeError('`year` must be a string.')
         if not isinstance(league, str):
             raise TypeError('`league` must be a string.')
-        if league not in comps.keys():
-            raise InvalidLeagueException(league, 'Understat', list(comps.keys()))
+        if league not in comps.keys() or "understat" not in comps[league]["modules"]:
+            raise InvalidLeagueException(league, 'Understat')
         valid_seasons = self.get_valid_seasons(league)
         if year not in valid_seasons:
             raise InvalidYearException(year, league, valid_seasons)
         
-        return f'{comps[league]}/{year.split("/")[0]}'
+        return f'{comps[league]["modules"]["understat"]}/{year.split("/")[0]}'
     
     # ==============================================================================================
     def get_valid_seasons(self, league: str) -> Sequence[str]:
@@ -60,17 +50,19 @@ class Understat:
         Parameters
         ----------
         league : str
-            League. Look in ScraperFC.Understat comps variable for available leagues.
         
         Returns
         ------
         : list of str
             Valid seasons for the chosen league
         """
-        if league not in comps.keys():
-            raise InvalidLeagueException(league, 'Understat', list(comps.keys()))
+        if league not in comps.keys() or "understat" not in comps[league]["modules"]:
+            raise InvalidLeagueException(league, 'Understat')
         
-        soup = BeautifulSoup(requests.get(comps[league]).content, 'html.parser')
+        soup = BeautifulSoup(
+            requests.get(comps[league]["modules"]["understat"]).content, 
+            'html.parser'
+        )
         valid_season_tags = soup.find('select', {'name': 'season'}).find_all('option')  # type: ignore
         valid_seasons = [x.text for x in valid_season_tags]
         return valid_seasons
@@ -84,7 +76,6 @@ class Understat:
         year : str
             See the :ref:`understat_year` `year` parameter docs for details.
         league : str
-            League. Look in ScraperFC.Understat comps variable for available leagues.
 
         Returns
         -------
@@ -103,7 +94,6 @@ class Understat:
         year : str
             See the :ref:`understat_year` `year` parameter docs for details.
         league : str
-            League. Look in ScraperFC.Understat comps variable for available leagues.
 
         Returns
         -------
@@ -125,7 +115,6 @@ class Understat:
         year : str
             See the :ref:`understat_year` `year` parameter docs for details.
         league : str
-            League. Look in ScraperFC.Understat comps variable for available leagues.
 
         Returns
         -------
@@ -155,7 +144,6 @@ class Understat:
         year : str
             See the :ref:`understat_year` `year` parameter docs for details.
         league : str
-            League. Look in ScraperFC.Understat comps variable for available leagues.
 
         Returns
         -------
@@ -289,7 +277,6 @@ class Understat:
         year : str
             See the :ref:`understat_year` `year` parameter docs for details.
         league : str
-            League. Look in ScraperFC.Understat comps variable for available leagues.
         as_df : bool, optional, default False
             If True, the data for each match will be returned as DataFrames. If False, invdividual
             match data will be dicts.
@@ -381,7 +368,6 @@ class Understat:
         year : str
             See the :ref:`understat_year` `year` parameter docs for details.
         league : str
-            League. Look in ScraperFC.Understat comps variable for available leagues.
         as_df : bool, optional, default False
             If True, each team's data will be returned as DataFrames. If False, dicts.
 

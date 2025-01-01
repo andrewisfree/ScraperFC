@@ -48,11 +48,11 @@ class TestSofascore:
     # ==============================================================================================
     @pytest.mark.parametrize(
         'year, league, expected',
-        [('19/20', 'Ligue 1', does_not_raise()),
+        [('19/20', 'France Ligue 1', does_not_raise()),
          ('23/24', 'fake league', pytest.raises(InvalidLeagueException)),
          ('17/18', 2000, pytest.raises(TypeError))]
     )
-    def test_invalid_leagues(self, year, league, expected):
+    def test_invalid_league(self, year, league, expected):
         """ Test checks on league input
         """
         ss = Sofascore()

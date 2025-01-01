@@ -1,4 +1,5 @@
 from .scraperfc_exceptions import InvalidLeagueException, InvalidYearException
+from .comps_mapping import comps
 from tqdm import tqdm
 import requests
 from bs4 import BeautifulSoup
@@ -8,30 +9,6 @@ from typing import Sequence
 import warnings
 
 TRANSFERMARKT_ROOT = 'https://www.transfermarkt.us'
-
-comps = {
-    'EPL': 'https://www.transfermarkt.us/premier-league/startseite/wettbewerb/GB1',
-    'EFL Championship': 'https://www.transfermarkt.us/championship/startseite/wettbewerb/GB2',
-    'EFL1': 'https://www.transfermarkt.us/league-one/startseite/wettbewerb/GB3',
-    'EFL2': 'https://www.transfermarkt.us/league-two/startseite/wettbewerb/GB4',
-    'Bundesliga': 'https://www.transfermarkt.us/bundesliga/startseite/wettbewerb/L1',
-    '2.Bundesliga': 'https://www.transfermarkt.us/2-bundesliga/startseite/wettbewerb/L2',
-    'Serie A': 'https://www.transfermarkt.us/serie-a/startseite/wettbewerb/IT1',
-    'Serie B': 'https://www.transfermarkt.us/serie-b/startseite/wettbewerb/IT2',
-    'La Liga': 'https://www.transfermarkt.us/laliga/startseite/wettbewerb/ES1',
-    'La Liga 2': 'https://www.transfermarkt.us/laliga2/startseite/wettbewerb/ES2',
-    'Ligue 1': 'https://www.transfermarkt.us/ligue-1/startseite/wettbewerb/FR1',
-    'Ligue 2': 'https://www.transfermarkt.us/ligue-2/startseite/wettbewerb/FR2',
-    'Eredivisie': 'https://www.transfermarkt.us/eredivisie/startseite/wettbewerb/NL1',
-    'Scottish PL': 'https://www.transfermarkt.us/scottish-premiership/startseite/wettbewerb/SC1',
-    'Super Lig': 'https://www.transfermarkt.us/super-lig/startseite/wettbewerb/TR1',
-    'Jupiler Pro League': 'https://www.transfermarkt.us/jupiler-pro-league/startseite/wettbewerb/BE1',  # noqa: E501
-    'Liga Nos': 'https://www.transfermarkt.us/liga-nos/startseite/wettbewerb/PO1',
-    'Russian Premier League': 'https://www.transfermarkt.us/premier-liga/startseite/wettbewerb/RU1',
-    'Brasileirao': 'https://www.transfermarkt.us/campeonato-brasileiro-serie-a/startseite/wettbewerb/BRA1',  # noqa: E501
-    'Argentina Liga Profesional': 'https://www.transfermarkt.us/superliga/startseite/wettbewerb/AR1N',  # noqa: E501
-    'MLS': 'https://www.transfermarkt.us/major-league-soccer/startseite/wettbewerb/MLS1'
-}
 
 
 class Transfermarkt():
@@ -43,7 +20,6 @@ class Transfermarkt():
         Parameters
         ----------
         league : str
-            The league to gather valid seasons for
         
         Returns
         -------
@@ -52,12 +28,15 @@ class Transfermarkt():
         """
         if not isinstance(league, str): 
             raise TypeError('`league` must be a string.')
-        if league not in comps.keys():
-            raise InvalidLeagueException(league, 'Transfermarkt', list(comps.keys()))
+        if league not in comps.keys() or "transfermarkt" not in comps[league]["modules"]:
+            raise InvalidLeagueException(league, 'Transfermarkt')
         
         scraper = cloudscraper.CloudScraper()
         try:
-            soup = BeautifulSoup(scraper.get(comps[league]).content, 'html.parser')
+            soup = BeautifulSoup(
+                scraper.get(comps[league]["modules"]["transfermarkt"]).content, 
+                'html.parser'
+            )
             season_tags = soup.find('select', {'name': 'saison_id'}).find_all('option')  # type: ignore
             valid_seasons = dict([(x.text, x['value']) for x in season_tags])
             return valid_seasons
@@ -73,7 +52,6 @@ class Transfermarkt():
         year : str
             See the :ref:`transfermarkt_year` `year` parameter docs for details.
         league : str
-            League to scrape.
         
         Returns
         -------
@@ -83,15 +61,14 @@ class Transfermarkt():
         if not isinstance(year, str):
             raise TypeError('`year` must be a string.')
         valid_seasons = self.get_valid_seasons(league)
-        if year not in valid_seasons.keys():
+        if year not in valid_seasons.keys() or "transfermarkt" not in comps[league]["modules"]:
             raise InvalidYearException(year, league, list(valid_seasons.keys()))
         
         scraper = cloudscraper.CloudScraper()
         try:
-            soup = BeautifulSoup(
-                scraper.get(f'{comps[league]}/plus/?saison_id={valid_seasons[year]}').content,
-                'html.parser'
-            )
+            url = f'{comps[league]["modules"]["transfermarkt"]}/plus/' + \
+                f'?saison_id={valid_seasons[year]}'
+            soup = BeautifulSoup(scraper.get(url).content, 'html.parser')
             items_table_tag = soup.find('table', {'class': 'items'})
             if items_table_tag is None:
                 warnings.warn(
@@ -114,7 +91,6 @@ class Transfermarkt():
         year : str
             See the :ref:`transfermarkt_year` `year` parameter docs for details.
         league : str
-            League to scrape.
         
         Returns
         -------
@@ -148,7 +124,6 @@ class Transfermarkt():
         year : str
             See the :ref:`transfermarkt_year` `year` parameter docs for details.
         league : str
-            League to scrape.
         
         Returns
         -------
@@ -156,7 +131,7 @@ class Transfermarkt():
             List of the match URLs
         """
         valid_seasons = self.get_valid_seasons(league)
-        fixtures_url = f"{comps[league].replace('startseite', 'gesamtspielplan')}/saison_id/{valid_seasons[year]}"
+        fixtures_url = f"{comps[league]["modules"]["transfermarkt"].replace('startseite', 'gesamtspielplan')}/saison_id/{valid_seasons[year]}"
         scraper = cloudscraper.CloudScraper()
         try:
             soup = BeautifulSoup(scraper.get(fixtures_url).content, "html.parser")
@@ -175,7 +150,6 @@ class Transfermarkt():
         year : str
             See the :ref:`transfermarkt_year` `year` parameter docs for details.
         league : str
-            League to scrape.
         
         Returns
         -------

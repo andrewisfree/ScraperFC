@@ -27,7 +27,7 @@ class TestTransfermarkt:
     # ==============================================================================================
     @pytest.mark.parametrize(
         'year, league, expected',
-        [('76/77', 'La Liga', does_not_raise()),
+        [('76/77', 'Spain La Liga', does_not_raise()),
          ('76/77', -1, pytest.raises(TypeError)),
          ('76/77', 'fake league', pytest.raises(InvalidLeagueException))]
     )

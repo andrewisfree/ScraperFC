@@ -38,7 +38,7 @@ class TestUnderstat:
     # ==============================================================================================
     @pytest.mark.parametrize(
         'year, league, expected',
-        [('2023/2024', 'RFPL', does_not_raise()),
+        [('2023/2024', 'Russia Premier League', does_not_raise()),
          ('2023/2024', {'league': 'RFPL'}, pytest.raises(TypeError)),
          ('2023/2024', 'fake league', pytest.raises(InvalidLeagueException))]
     )
