@@ -304,6 +304,10 @@ comps = {
     },
     "Turkiye Super Lig": {
         "modules": {
+            "fbref": {
+                "history url": "https://fbref.com/en/comps/26/history/Super-Lig-Seasons",
+                "finders": ["Super-Lig"]
+            },
             "capology": "tr/super-lig",
             "transfermakrt": "https://www.transfermarkt.us/super-lig/startseite/wettbewerb/TR1",
             "sofascore": 52,
