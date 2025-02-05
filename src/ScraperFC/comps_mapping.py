@@ -190,6 +190,26 @@ comps: Dict[str, Any] = {
             },
         },
     },
+    "Italy Campionato U18": {
+        "modules": {
+            "transfermarkt": "https://www.transfermarkt.us/campionato-nazionale-under-18/startseite/wettbewerb/ITJ7",
+        },
+    },
+    "Italy Primavera 1": {
+        "modules": {
+            "transfermarkt": "https://www.transfermarkt.us/primavera-1/startseite/wettbewerb/IJ1",
+        },
+    },
+    "Italy Primavera 2 - A": {
+        "modules": {
+            "transfermarkt": "https://www.transfermarkt.us/primavera-2a/startseite/wettbewerb/IJ2A",
+        },
+    },
+    "Italy Primavera 2 - B": {
+        "modules": {
+            "transfermarkt": "https://www.transfermarkt.us/primavera-2b/startseite/wettbewerb/IJ2B",
+        },
+    },
     "Italy Serie A": {
         "modules": {
             "fbref": {
