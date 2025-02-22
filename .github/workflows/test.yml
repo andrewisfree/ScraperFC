@@ -24,7 +24,7 @@ jobs:
         if: always()
         run: |
           curl https://deepsource.io/cli | sh
-          deepsource report --analyzer test-coverage --key python --value-file coverage-capology.xml
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file coverage-capology.xml
   test-clubelo:
     name: test-clubelo
     runs-on: ubuntu-latest
@@ -46,7 +46,7 @@ jobs:
         if: always()
         run: |
           curl https://deepsource.io/cli | sh
-          deepsource report --analyzer test-coverage --key python --value-file coverage-clubelo.xml
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file coverage-clubelo.xml
   test-fbref:
     name: test-fbref
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
         if: always()
         run: |
           curl https://deepsource.io/cli | sh
-          deepsource report --analyzer test-coverage --key python --value-file coverage-fbref.xml
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file coverage-fbref.xml
   test-sofascore:
     name: test-sofascore
     runs-on: ubuntu-latest
@@ -90,7 +90,7 @@ jobs:
         if: always()
         run: |
           curl https://deepsource.io/cli | sh
-          deepsource report --analyzer test-coverage --key python --value-file coverage-sofascore.xml
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file coverage-sofascore.xml
   test-transfermarkt:
     name: test-transfermarkt
     runs-on: ubuntu-latest
@@ -112,7 +112,7 @@ jobs:
         if: always()
         run: |
           curl https://deepsource.io/cli | sh
-          deepsource report --analyzer test-coverage --key python --value-file coverage-transfermarkt.xml
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file coverage-transfermarkt.xml
   test-understat:
     name: test-understat
     runs-on: ubuntu-latest
@@ -134,7 +134,7 @@ jobs:
         if: always()
         run: |
           curl https://deepsource.io/cli | sh
-          deepsource report --analyzer test-coverage --key python --value-file coverage-understat.xml
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file coverage-understat.xml
   test-build-docs:
     name: test-build-docs
     runs-on: ubuntu-latest
