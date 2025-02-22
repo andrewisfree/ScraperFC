@@ -21,12 +21,10 @@ jobs:
       - name: Run tox test env
         run: tox -r -e test-capology -- --basepython ${{ matrix.python.toxenv }}
       - name: Send coverage to DeepSource
-        uses: deepsourcelabs/test-coverage-action@master
         if: always()
-        with:
-          key: python
-          coverage-file: coverage_capology.xml
-          dsn: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          curl https://deepsource.io/cli | sh
+          deepsource report --analyzer test-coverage --key python --value-file coverage-capology.xml
   test-clubelo:
     name: test-clubelo
     runs-on: ubuntu-latest
@@ -45,12 +43,10 @@ jobs:
       - name: Run tox test env
         run: tox -r -e test-clubelo -- --basepython ${{ matrix.python.toxenv }}
       - name: Send coverage to DeepSource
-        uses: deepsourcelabs/test-coverage-action@master
         if: always()
-        with:
-          key: python
-          coverage-file: coverage_clubelo.xml
-          dsn: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          curl https://deepsource.io/cli | sh
+          deepsource report --analyzer test-coverage --key python --value-file coverage-clubelo.xml
   test-fbref:
     name: test-fbref
     runs-on: ubuntu-latest
@@ -69,12 +65,10 @@ jobs:
       - name: Run tox test env
         run: tox -r -e test-fbref -- --basepython ${{ matrix.python.toxenv }}
       - name: Send coverage to DeepSource
-        uses: deepsourcelabs/test-coverage-action@master
         if: always()
-        with:
-          key: python
-          coverage-file: coverage_fbref.xml
-          dsn: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          curl https://deepsource.io/cli | sh
+          deepsource report --analyzer test-coverage --key python --value-file coverage-fbref.xml
   test-sofascore:
     name: test-sofascore
     runs-on: ubuntu-latest
@@ -93,12 +87,10 @@ jobs:
       - name: Run tox test env
         run: tox -r -e test-sofascore -- --basepython ${{ matrix.python.toxenv }}
       - name: Send coverage to DeepSource
-        uses: deepsourcelabs/test-coverage-action@master
         if: always()
-        with:
-          key: python
-          coverage-file: coverage_sofascore.xml
-          dsn: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          curl https://deepsource.io/cli | sh
+          deepsource report --analyzer test-coverage --key python --value-file coverage-sofascore.xml
   test-transfermarkt:
     name: test-transfermarkt
     runs-on: ubuntu-latest
@@ -117,12 +109,10 @@ jobs:
       - name: Run tox test env
         run: tox -r -e test-transfermarkt -- --basepython ${{ matrix.python.toxenv }}
       - name: Send coverage to DeepSource
-        uses: deepsourcelabs/test-coverage-action@master
         if: always()
-        with:
-          key: python
-          coverage-file: coverage_transfermarkt.xml
-          dsn: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          curl https://deepsource.io/cli | sh
+          deepsource report --analyzer test-coverage --key python --value-file coverage-transfermarkt.xml
   test-understat:
     name: test-understat
     runs-on: ubuntu-latest
@@ -141,12 +131,10 @@ jobs:
       - name: Run tox test env
         run: tox -r -e test-understat -- --basepython ${{ matrix.python.toxenv }}
       - name: Send coverage to DeepSource
-        uses: deepsourcelabs/test-coverage-action@master
         if: always()
-        with:
-          key: python
-          coverage-file: coverage_understat.xml
-          dsn: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          curl https://deepsource.io/cli | sh
+          deepsource report --analyzer test-coverage --key python --value-file coverage-understat.xml
   test-build-docs:
     name: test-build-docs
     runs-on: ubuntu-latest
