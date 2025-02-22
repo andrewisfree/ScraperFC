@@ -84,7 +84,7 @@ norecursedirs = ["docs", "*.egg-info", ".git", ".tox"]
 
 [tool.coverage.run]
 branch = true
-omit = ["*oddsportal.py"]
+omit = ["*oddsportal.py", ".tox/*", "env/*"]
 
 [tool.coverage.report]
 show_missing = true
