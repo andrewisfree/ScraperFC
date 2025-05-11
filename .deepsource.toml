@@ -1,7 +1,13 @@
 version = 1
 
+test_patterns = [
+  "test/*"
+]
+
 [[analyzers]]
 name = "python"
+enabled = true
+dependency_file_paths = ["pyproject.toml", ]
 enabled = true
 dependency_file_paths = ["pyproject.toml", ]
 
